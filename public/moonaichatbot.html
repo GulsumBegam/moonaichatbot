@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Moon AI Chatbot — Full Stack Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#02010a;--void2:#0d0b1e;
+  --lunar:#a394ff;--lunar-d:#6b4eff;--lunar-dd:#3d1aff;
+  --cyan:#00e5ff;--pink:#ff6eb4;--gold:#ffd700;
+  --glass:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.09);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void);color:rgba(255,255,255,0.88);
+  font-family:'DM Sans',sans-serif;overflow-x:hidden;
+  cursor:default;
+}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:rgba(255,255,255,0.03)}
+::-webkit-scrollbar-thumb{background:rgba(107,78,255,0.4);border-radius:2px}
+
+/* --- CANVAS --- */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* --- NOISE GRAIN --- */
+body::before{
+  content:'';position:fixed;inset:0;z-index:999;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* --- LAYOUT --- */
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* --- HERO --- */
+#hero{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:80px 24px;
+}
+.moon-orb{
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#e8e4ff,#a394ff 35%,#5534ff 72%,#1a0066 100%);
+  box-shadow:0 0 80px rgba(107,78,255,.6),0 0 160px rgba(107,78,255,.25);
+  position:relative;margin:0 auto 40px;
+  animation:float 7s ease-in-out infinite;
+}
+.moon-orb::after{
+  content:'';position:absolute;inset:-18px;border-radius:50%;
+  border:1px dashed rgba(107,78,255,.35);
+  animation:spin 22s linear infinite;
+}
+.moon-dot{
+  position:absolute;width:8px;height:8px;border-radius:50%;
+  background:#00e5ff;box-shadow:0 0 8px #00e5ff;
+  top:50%;left:-4px;transform:translateY(-50%);
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:999px;
+  background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:20px;
+}
+.star-icon{font-size:14px}
+h1{
+  font-family:'Cormorant Garamond',serif;font-weight:300;
+  font-size:clamp(4rem,10vw,7.5rem);line-height:.95;
+  letter-spacing:-.02em;
+  background:linear-gradient(135deg,#a394ff 0%,#fff 40%,#00e5ff 70%,#a394ff 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:shimmer 5s linear infinite;margin-bottom:12px;
+}
+@keyframes shimmer{from{background-position:-200% center}to{background-position:200% center}}
+.hero-sub{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.35em;
+  text-transform:uppercase;color:rgba(163,148,255,.55);margin-bottom:28px;
+}
+.hero-desc{
+  font-size:17px;line-height:1.75;color:rgba(255,255,255,.48);font-style:italic;
+  max-width:480px;margin:0 auto 48px;
+}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:64px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:14px 28px;
+  border-radius:14px;font-size:14px;font-weight:500;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:all .3s cubic-bezier(.16,1,.3,1);font-family:'DM Sans',sans-serif;
+}
+.btn-primary{
+  background:linear-gradient(135deg,rgba(107,78,255,.85),rgba(85,52,255,.95));
+  color:#fff;border:1px solid rgba(163,148,255,.25);
+  box-shadow:0 0 30px rgba(107,78,255,.45),0 8px 24px rgba(0,0,0,.35);
+}
+.btn-primary:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 50px rgba(107,78,255,.65),0 12px 30px rgba(0,0,0,.4)}
+.btn-secondary{
+  background:rgba(255,255,255,.05);color:rgba(255,255,255,.65);
+  border:1px solid rgba(255,255,255,.1);
+}
+.btn-secondary:hover{background:rgba(255,255,255,.08);transform:translateY(-2px)}
+
+.tech-stack{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.tech-pill{
+  padding:5px 13px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;
+  background:rgba(107,78,255,.1);border:1px solid rgba(107,78,255,.18);color:rgba(163,148,255,.7);
+}
+
+/* --- SECTION --- */
+section{padding:100px 0}
+.sec-label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.35em;
+  text-transform:uppercase;color:rgba(107,78,255,.6);margin-bottom:14px;
+}
+.sec-title{
+  font-family:'Cormorant Garamond',serif;font-weight:300;
+  font-size:clamp(2.2rem,5vw,3.8rem);margin-bottom:16px;
+  color:rgba(255,255,255,.88);
+}
+.sec-desc{font-size:15px;color:rgba(255,255,255,.4);line-height:1.75;max-width:500px}
+
+/* --- DEMO --- */
+#demo{background:rgba(13,11,30,.5);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.demo-window{
+  border-radius:20px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 80px rgba(107,78,255,.15);
+  background:#02010a;
+}
+.demo-titlebar{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 20px;
+  background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);
+}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot-r{background:#ff5f57}.dot-y{background:#febc2e}.dot-g{background:#28c840}
+.tb-title{
+  flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:rgba(255,255,255,.25);
+}
+.demo-body{display:flex;height:480px}
+.demo-sidebar{
+  width:220px;flex-shrink:0;
+  background:rgba(6,5,15,.9);border-right:1px solid rgba(255,255,255,.06);
+  padding:16px 12px;display:flex;flex-direction:column;gap:10px;
+}
+.ds-header{display:flex;align-items:center;gap:8px;padding:8px;margin-bottom:4px}
+.ds-moon{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 35% 35%,#e8e4ff,#5534ff);
+  box-shadow:0 0 8px rgba(107,78,255,.5);
+}
+.ds-name{font-family:'Cormorant Garamond',serif;font-size:15px;color:rgba(255,255,255,.8)}
+.ds-btn{
+  padding:8px 12px;border-radius:10px;font-size:11px;text-align:center;
+  background:rgba(107,78,255,.12);border:1px solid rgba(107,78,255,.2);color:rgba(163,148,255,.8);
+}
+.ds-label{font-size:9px;text-transform:uppercase;letter-spacing:.2em;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.2);padding:4px 8px}
+.ds-item{
+  padding:8px 10px;border-radius:8px;
+  font-size:11px;color:rgba(255,255,255,.45);cursor:pointer;
+}
+.ds-item.active{background:rgba(107,78,255,.15);border:1px solid rgba(107,78,255,.2);color:rgba(255,255,255,.8)}
+.demo-chat{flex:1;display:flex;flex-direction:column}
+.dc-header{
+  padding:12px 20px;display:flex;align-items:center;gap:8px;
+  background:rgba(6,5,15,.7);border-bottom:1px solid rgba(255,255,255,.05);
+}
+.dc-dot{width:6px;height:6px;border-radius:50%;background:#00e5ff;box-shadow:0 0 6px #00e5ff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.dc-messages{flex:1;padding:16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:10px;animation:slideUp .4s cubic-bezier(.16,1,.3,1) both}
+.msg.user{justify-content:flex-end}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.msg-avatar{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;margin-top:2px;
+  background:radial-gradient(circle at 35% 35%,#e8e4ff,#5534ff);
+  box-shadow:0 0 8px rgba(107,78,255,.4);
+}
+.msg-bubble{
+  max-width:70%;padding:10px 14px;border-radius:14px;font-size:12.5px;line-height:1.65;
+}
+.msg.ai .msg-bubble{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  color:rgba(255,255,255,.82);border-top-left-radius:4px;
+}
+.msg.user .msg-bubble{
+  background:linear-gradient(135deg,rgba(107,78,255,.7),rgba(85,52,255,.85));
+  border:1px solid rgba(163,148,255,.2);color:#fff;border-top-right-radius:4px;
+}
+.msg-time{font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.18);margin-top:4px;text-align:right}
+.typing-row{display:flex;gap:10px;align-items:center}
+.typing-bubble{
+  display:flex;gap:4px;align-items:center;
+  padding:10px 14px;border-radius:14px;border-top-left-radius:4px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+}
+.td{width:6px;height:6px;border-radius:50%;background:rgba(107,78,255,.6);animation:tdot 1.2s ease-in-out infinite}
+.td:nth-child(2){animation-delay:.18s}.td:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
+.dc-input{
+  padding:12px 16px;background:rgba(6,5,15,.7);border-top:1px solid rgba(255,255,255,.05);
+}
+.dc-input-inner{
+  display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:12px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(107,78,255,.2);
+}
+.dc-input-text{font-size:12px;color:rgba(255,255,255,.35);font-style:italic;flex:1}
+.dc-send{
+  width:28px;height:28px;border-radius:9px;
+  background:linear-gradient(135deg,rgba(107,78,255,.7),rgba(85,52,255,.9));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 0 12px rgba(107,78,255,.4);
+}
+.dc-send svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* --- FEATURES --- */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:60px}
+.feat-card{
+  padding:28px;border-radius:18px;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);
+  transition:all .35s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;
+}
+.feat-card::before{
+  content:'';position:absolute;inset:0;border-radius:18px;opacity:0;
+  background:radial-gradient(circle at 60% 20%,rgba(107,78,255,.12),transparent 60%);
+  transition:opacity .35s;
+}
+.feat-card:hover{transform:translateY(-4px);border-color:rgba(107,78,255,.2);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.feat-card:hover::before{opacity:1}
+.feat-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:20px;
+}
+.feat-title{font-size:16px;font-weight:500;margin-bottom:8px;color:rgba(255,255,255,.85)}
+.feat-desc{font-size:13px;color:rgba(255,255,255,.38);line-height:1.7}
+
+/* --- API ROUTES --- */
+.api-grid{margin-top:50px;display:flex;flex-direction:column;gap:10px}
+.api-row{
+  display:flex;align-items:center;gap:16px;padding:14px 20px;border-radius:12px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  transition:all .25s;
+}
+.api-row:hover{border-color:rgba(107,78,255,.2);background:rgba(107,78,255,.05)}
+.method{
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;
+  padding:4px 10px;border-radius:6px;width:56px;text-align:center;flex-shrink:0;
+}
+.get{background:rgba(0,229,255,.12);color:#00e5ff;border:1px solid rgba(0,229,255,.2)}
+.post{background:rgba(107,78,255,.15);color:var(--lunar);border:1px solid rgba(107,78,255,.25)}
+.del{background:rgba(255,110,110,.1);color:#ff8080;border:1px solid rgba(255,110,110,.2)}
+.patch{background:rgba(255,215,0,.1);color:var(--gold);border:1px solid rgba(255,215,0,.2)}
+.api-path{font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,.7);flex:1}
+.api-desc{font-size:12px;color:rgba(255,255,255,.3)}
+
+/* --- FILE TREE --- */
+.file-tree{
+  margin-top:50px;padding:28px;border-radius:18px;font-family:'JetBrains Mono',monospace;
+  background:rgba(2,1,10,.8);border:1px solid rgba(255,255,255,.07);font-size:12.5px;
+  line-height:2;
+}
+.ft-dir{color:var(--lunar);font-weight:500}
+.ft-file{color:rgba(255,255,255,.55)}
+.ft-comment{color:rgba(255,255,255,.22);font-style:italic}
+.ft-indent{padding-left:20px}
+.ft-indent2{padding-left:40px}
+.ft-indent3{padding-left:60px}
+
+/* --- LANGUAGES --- */
+.lang-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:50px}
+.lang-card{
+  padding:20px;border-radius:14px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  transition:all .3s;
+}
+.lang-card:hover{transform:translateY(-3px);border-color:rgba(107,78,255,.2)}
+.lang-name{font-size:15px;font-weight:500;margin-bottom:6px;color:rgba(255,255,255,.82)}
+.lang-ext{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:rgba(255,255,255,.28);margin-bottom:12px;
+}
+.lang-bar-wrap{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.lang-bar{height:100%;border-radius:2px;transition:width 1s cubic-bezier(.16,1,.3,1)}
+
+/* --- SETUP --- */
+.setup-steps{margin-top:50px;display:flex;flex-direction:column;gap:14px}
+.step{
+  display:flex;gap:20px;padding:20px 24px;border-radius:14px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  transition:all .3s;align-items:flex-start;
+}
+.step:hover{border-color:rgba(107,78,255,.15);background:rgba(107,78,255,.04)}
+.step-num{
+  width:32px;height:32px;border-radius:10px;flex-shrink:0;
+  background:rgba(107,78,255,.2);border:1px solid rgba(107,78,255,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--lunar);
+}
+.step-title{font-size:14px;font-weight:500;color:rgba(255,255,255,.8);margin-bottom:6px}
+.step-code{
+  display:block;margin-top:8px;padding:10px 14px;border-radius:8px;
+  background:rgba(2,1,10,.7);border:1px solid rgba(255,255,255,.07);
+  font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(163,148,255,.75);
+  word-break:break-all;
+}
+.step-desc{font-size:13px;color:rgba(255,255,255,.38);line-height:1.65}
+
+/* --- FOOTER --- */
+footer{
+  text-align:center;padding:60px 24px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.footer-moon{
+  width:48px;height:48px;border-radius:50%;margin:0 auto 20px;
+  background:radial-gradient(circle at 35% 35%,#e8e4ff,#5534ff);
+  box-shadow:0 0 30px rgba(107,78,255,.4);
+}
+.footer-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:rgba(255,255,255,.6);margin-bottom:8px}
+.footer-sub{font-size:12px;color:rgba(255,255,255,.22);font-family:'JetBrains Mono',monospace;letter-spacing:.1em}
+
+/* --- DIVIDER --- */
+.star-divider{text-align:center;padding:20px 0;color:rgba(107,78,255,.3);font-size:18px;letter-spacing:12px}
+
+/* --- STARS BG CANVAS STYLE --- */
+canvas{display:block}
+
+/* entrance animations */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge"><span class="star-icon">★</span> Best Project Award</div>
+  <div class="moon-orb">
+    <div class="moon-dot"></div>
+  </div>
+  <h1>Moon AI</h1>
+  <p class="hero-sub">Full Stack Conversational AI Web App</p>
+  <p class="hero-desc">Where artificial intelligence meets cosmic wonder — a space-themed chatbot with real-time AI, persistent history, and glassmorphism UI.</p>
+  <div class="cta-row">
+    <a href="#setup" class="btn btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      View on GitHub
+    </a>
+    <a href="#demo" class="btn btn-secondary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Live Preview
+    </a>
+  </div>
+  <div class="tech-stack">
+    <span class="tech-pill">Next.js 15</span>
+    <span class="tech-pill">TypeScript</span>
+    <span class="tech-pill">Prisma ORM</span>
+    <span class="tech-pill">OpenAI API</span>
+    <span class="tech-pill">Tailwind CSS</span>
+    <span class="tech-pill">Framer Motion</span>
+    <span class="tech-pill">shadcn/ui</span>
+    <span class="tech-pill">SQLite</span>
+  </div>
+</section>
+
+<!-- DEMO PREVIEW -->
+<section id="demo">
+<div class="wrap">
+  <div class="reveal">
+    <p class="sec-label">★ UI Preview</p>
+    <h2 class="sec-title">See it in action</h2>
+  </div>
+  <br/><br/>
+  <div class="demo-window reveal">
+    <div class="demo-titlebar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="tb-title">Moon AI — localhost:3000</div>
+    </div>
+    <div class="demo-body">
+      <!-- Sidebar -->
+      <div class="demo-sidebar">
+        <div class="ds-header">
+          <div class="ds-moon"></div>
+          <span class="ds-name">Moon AI</span>
+        </div>
+        <div class="ds-btn">+ New Conversation</div>
+        <div class="ds-label">History</div>
+        <div class="ds-item active">Tell me about cosmos…</div>
+        <div class="ds-item">What is TypeScript?</div>
+        <div class="ds-item">Write a cosmic poem</div>
+        <div class="ds-item">Explain Prisma ORM</div>
+        <div class="ds-item">Next.js App Router</div>
+      </div>
+      <!-- Chat -->
+      <div class="demo-chat">
+        <div class="dc-header">
+          <div class="ds-moon" style="width:18px;height:18px;box-shadow:0 0 6px rgba(107,78,255,.5)"></div>
+          <span style="font-size:13px;color:rgba(255,255,255,.6);font-family:'Cormorant Garamond',serif;font-size:15px">Moon AI</span>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+            <div class="dc-dot"></div>
+            <span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:rgba(0,229,255,.55)">Online</span>
+          </div>
+        </div>
+        <div class="dc-messages" id="demo-msgs">
+          <div class="msg ai" style="animation-delay:.1s">
+            <div class="msg-avatar"></div>
+            <div>
+              <div class="msg-bubble">Greetings, cosmic traveler 🌙 I am Moon, your celestial AI companion. Ask me anything — from the depths of code to the edges of the universe.</div>
+              <div class="msg-time">just now</div>
+            </div>
+          </div>
+          <div class="msg user" style="animation-delay:.25s">
+            <div>
+              <div class="msg-bubble">Tell me about the cosmos and AI</div>
+              <div class="msg-time">just now</div>
+            </div>
+          </div>
+          <div class="msg ai" style="animation-delay:.4s" id="ai-resp">
+            <div class="msg-avatar"></div>
+            <div>
+              <div class="msg-bubble">The cosmos and AI share a beautiful kinship ✨ — both are vast, emergent, and full of hidden patterns. Just as stars self-organize into galaxies, neural networks self-organize into understanding...</div>
+              <div class="msg-time">just now</div>
+            </div>
+          </div>
+        </div>
+        <div class="dc-input">
+          <div class="dc-input-inner">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(107,78,255,.5)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span class="dc-input-text">Ask the cosmos anything…</span>
+            <div class="dc-send"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="star-divider">✦ ✦ ✦</div>
+
+<!-- FEATURES -->
+<section>
+<div class="wrap">
+  <div class="reveal">
+    <p class="sec-label">Capabilities</p>
+    <h2 class="sec-title">Everything you need</h2>
+    <p class="sec-desc">A complete full-stack AI application from frontend to database, in one cohesive cosmic experience.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(107,78,255,.15);border:1px solid rgba(107,78,255,.2)">🤖</div>
+      <div class="feat-title">Real-time AI Responses</div>
+      <div class="feat-desc">Powered by OpenAI GPT-4o-mini via custom REST API routes. Full conversation context sent with each request.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.15)">💾</div>
+      <div class="feat-title">Persistent Chat History</div>
+      <div class="feat-desc">Prisma ORM with SQLite stores all conversations and messages. Load any past chat instantly from the sidebar.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(255,110,180,.1);border:1px solid rgba(255,110,180,.15)">🌌</div>
+      <div class="feat-title">Glassmorphism UI</div>
+      <div class="feat-desc">Space-themed design with animated nebulae, star fields, shooting stars, and a floating moon orb with orbit ring.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.15)">⚡</div>
+      <div class="feat-title">Framer Motion Animations</div>
+      <div class="feat-desc">Smooth page transitions, message entrance animations, typing indicators, hover effects, and staggered reveals.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(107,78,255,.15);border:1px solid rgba(107,78,255,.2)">📝</div>
+      <div class="feat-title">Markdown Rendering</div>
+      <div class="feat-desc">AI responses rendered with ReactMarkdown — supports code blocks, bold, lists, blockquotes, and more.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.15)">🗂️</div>
+      <div class="feat-title">Multi-Conversation</div>
+      <div class="feat-desc">Create unlimited conversations, switch between them, rename, and delete with smooth animations.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- API ROUTES -->
+<section style="padding-top:40px">
+<div class="wrap">
+  <div class="reveal">
+    <p class="sec-label">Backend</p>
+    <h2 class="sec-title">REST API Routes</h2>
+    <p class="sec-desc">Full backend built with Next.js App Router API routes. Clean, typed, and documented.</p>
+  </div>
+  <div class="api-grid reveal">
+    <div class="api-row">
+      <span class="method post">POST</span>
+      <span class="api-path">/api/chat</span>
+      <span class="api-desc">Send message → get AI response + save to DB</span>
+    </div>
+    <div class="api-row">
+      <span class="method get">GET</span>
+      <span class="api-path">/api/history</span>
+      <span class="api-desc">Fetch all conversations (sorted by latest)</span>
+    </div>
+    <div class="api-row">
+      <span class="method get">GET</span>
+      <span class="api-path">/api/history/:id</span>
+      <span class="api-desc">Get conversation with full message history</span>
+    </div>
+    <div class="api-row">
+      <span class="method del">DELETE</span>
+      <span class="api-path">/api/history/:id</span>
+      <span class="api-desc">Delete conversation and all its messages</span>
+    </div>
+    <div class="api-row">
+      <span class="method patch">PATCH</span>
+      <span class="api-path">/api/history/:id</span>
+      <span class="api-desc">Update conversation title</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FILE STRUCTURE -->
+<section>
+<div class="wrap">
+  <div class="reveal">
+    <p class="sec-label">Architecture</p>
+    <h2 class="sec-title">Project Structure</h2>
+  </div>
+  <div class="file-tree reveal">
+    <div><span class="ft-dir">moon-ai-chatbot/</span></div>
+    <div class="ft-indent"><span class="ft-dir">app/</span> <span class="ft-comment">← Next.js App Router</span></div>
+    <div class="ft-indent2"><span class="ft-dir">api/</span></div>
+    <div class="ft-indent3"><span class="ft-file">chat/route.ts</span> <span class="ft-comment">← POST /api/chat</span></div>
+    <div class="ft-indent3"><span class="ft-file">history/route.ts</span> <span class="ft-comment">← GET all conversations</span></div>
+    <div class="ft-indent3"><span class="ft-file">history/[id]/route.ts</span> <span class="ft-comment">← GET/DELETE/PATCH</span></div>
+    <div class="ft-indent2"><span class="ft-file">layout.tsx</span> <span class="ft-comment">← Root layout + fonts</span></div>
+    <div class="ft-indent2"><span class="ft-file">page.tsx</span> <span class="ft-comment">← Main page (client)</span></div>
+    <div class="ft-indent"><span class="ft-dir">components/</span> <span class="ft-comment">← UI Components</span></div>
+    <div class="ft-indent2"><span class="ft-file">CosmicBackground.tsx</span> <span class="ft-comment">← Stars, nebulae, moon</span></div>
+    <div class="ft-indent2"><span class="ft-file">LandingHero.tsx</span> <span class="ft-comment">← Welcome screen</span></div>
+    <div class="ft-indent2"><span class="ft-file">Sidebar.tsx</span> <span class="ft-comment">← Conversation history</span></div>
+    <div class="ft-indent2"><span class="ft-file">ChatInterface.tsx</span> <span class="ft-comment">← Messages + input</span></div>
+    <div class="ft-indent"><span class="ft-dir">lib/</span></div>
+    <div class="ft-indent2"><span class="ft-file">prisma.ts</span> <span class="ft-comment">← DB client singleton</span></div>
+    <div class="ft-indent2"><span class="ft-file">utils.ts</span> <span class="ft-comment">← Helper functions</span></div>
+    <div class="ft-indent"><span class="ft-dir">prisma/</span></div>
+    <div class="ft-indent2"><span class="ft-file">schema.prisma</span> <span class="ft-comment">← Conversation + Message models</span></div>
+    <div class="ft-indent"><span class="ft-dir">types/</span></div>
+    <div class="ft-indent2"><span class="ft-file">index.ts</span> <span class="ft-comment">← TypeScript interfaces</span></div>
+    <div class="ft-indent"><span class="ft-file">tailwind.config.ts</span> <span class="ft-comment">← Cosmic design tokens</span></div>
+    <div class="ft-indent"><span class="ft-file">next.config.mjs</span> <span class="ft-comment">← Next.js configuration</span></div>
+    <div class="ft-indent"><span class="ft-file">.env.example</span> <span class="ft-comment">← Environment template</span></div>
+    <div class="ft-indent"><span class="ft-file">README.md</span> <span class="ft-comment">← Full documentation</span></div>
+  </div>
+</div>
+</section>
+
+<!-- LANGUAGES -->
+<section style="padding-top:40px">
+<div class="wrap">
+  <div class="reveal">
+    <p class="sec-label">GitHub Languages</p>
+    <h2 class="sec-title">Languages on GitHub</h2>
+    <p class="sec-desc">GitHub auto-detects these languages when you push. Your repo will show a beautiful language breakdown.</p>
+  </div>
+  <div class="lang-grid reveal">
+    <div class="lang-card">
+      <div class="lang-name">TypeScript</div>
+      <div class="lang-ext">.ts · .tsx files</div>
+      <div class="lang-bar-wrap"><div class="lang-bar" style="width:65%;background:linear-gradient(90deg,#3178c6,#5b9fd4)"></div></div>
+    </div>
+    <div class="lang-card">
+      <div class="lang-name">CSS</div>
+      <div class="lang-ext">.css · globals.css</div>
+      <div class="lang-bar-wrap"><div class="lang-bar" style="width:18%;background:linear-gradient(90deg,#563d7c,#9b59b6)"></div></div>
+    </div>
+    <div class="lang-card">
+      <div class="lang-name">Prisma</div>
+      <div class="lang-ext">.prisma schema file</div>
+      <div class="lang-bar-wrap"><div class="lang-bar" style="width:8%;background:linear-gradient(90deg,#0c344b,#1a7fa0)"></div></div>
+    </div>
+    <div class="lang-card">
+      <div class="lang-name">JavaScript</div>
+      <div class="lang-ext">.js config files</div>
+      <div class="lang-bar-wrap"><div class="lang-bar" style="width:6%;background:linear-gradient(90deg,#f1e05a,#e3c12e)"></div></div>
+    </div>
+    <div class="lang-card">
+      <div class="lang-name">JSON</div>
+      <div class="lang-ext">package.json · tsconfig</div>
+      <div class="lang-bar-wrap"><div class="lang-bar" style="width:3%;background:linear-gradient(90deg,#555,#888)"></div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- SETUP -->
+<section id="setup">
+<div class="wrap">
+  <div class="reveal">
+    <p class="sec-label">Get Started</p>
+    <h2 class="sec-title">Quick Setup</h2>
+    <p class="sec-desc">From zero to running Moon AI in under 2 minutes.</p>
+  </div>
+  <div class="setup-steps reveal">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Clone & Install</div>
+        <code class="step-code">git clone https://github.com/YOUR_USERNAME/moon-ai-chatbot.git && cd moon-ai-chatbot && npm install</code>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Configure Environment</div>
+        <div class="step-desc">Copy <code style="background:rgba(107,78,255,.15);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px">.env.example</code> → <code style="background:rgba(107,78,255,.15);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px">.env.local</code> and add your OpenAI API key from <a href="https://platform.openai.com" style="color:var(--cyan)">platform.openai.com</a></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Setup Database</div>
+        <code class="step-code">npx prisma generate && npx prisma db push</code>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Launch 🚀</div>
+        <code class="step-code">npm run dev</code>
+        <div class="step-desc" style="margin-top:8px">Open <a href="http://localhost:3000" style="color:var(--cyan)">http://localhost:3000</a> and start chatting with the cosmos.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-moon"></div>
+  <div class="footer-title">Moon AI Chatbot</div>
+  <div class="footer-sub">★ Best Project · Built with Next.js 15 · TypeScript · Prisma · OpenAI</div>
+  <br/>
+  <div style="font-size:11px;color:rgba(255,255,255,.15);margin-top:16px;font-family:'JetBrains Mono',monospace">
+    Full Stack · REST API · Glassmorphism UI · Space Theme
+  </div>
+</footer>
+
+<script>
+// ---- CANVAS BACKGROUND ----
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+
+// Stars
+const stars=Array.from({length:220},()=>({
+  x:Math.random()*100,y:Math.random()*100,
+  r:Math.random()*1.4+.3,op:Math.random()*.7+.2,
+  sp:Math.random()*3+2,ph:Math.random()*Math.PI*2
+}));
+
+// Nebula clouds
+const clouds=[
+  {x:.2,y:.5,r:.32,h:260,s:.0003,ph:0},
+  {x:.8,y:.2,h:210,r:.28,s:.0004,ph:1},
+  {x:.6,y:.8,h:310,r:.25,s:.00025,ph:2},
+  {x:.05,y:.85,h:190,r:.22,s:.0005,ph:3},
+];
+let t=0;
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // Base gradient
+  const bg=ctx.createRadialGradient(W*.2,H*.5,0,W*.5,H*.5,W);
+  bg.addColorStop(0,'#0d0520');bg.addColorStop(.5,'#02010a');bg.addColorStop(1,'#000814');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // Nebulae
+  clouds.forEach(c=>{
+    const a=.04+.018*Math.sin(t*c.s+c.ph);
+    const g=ctx.createRadialGradient(c.x*W,c.y*H,0,c.x*W,c.y*H,c.r*W);
+    g.addColorStop(0,`hsla(${c.h},75%,60%,${a})`);g.addColorStop(1,'transparent');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(c.x*W,c.y*H,c.r*W,0,Math.PI*2);ctx.fill();
+  });
+  // Stars
+  stars.forEach(s=>{
+    const o=s.op*(.4+.6*Math.abs(Math.sin(t*s.sp*.015+s.ph)));
+    ctx.beginPath();ctx.arc(s.x/100*W,s.y/100*H,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${o})`;ctx.fill();
+  });
+  t++;requestAnimationFrame(draw);
+}
+draw();
+
+// ---- SCROLL REVEAL ----
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible')}});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ---- LANG BAR ANIMATION ----
+const barObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.lang-bar').forEach(b=>{
+        const w=b.style.width;b.style.width='0';
+        setTimeout(()=>{b.style.width=w;},100);
+      });
+    }
+  });
+},{threshold:.3});
+document.querySelectorAll('.lang-grid').forEach(el=>barObs.observe(el));
+</script>
+</body>
+</html>
