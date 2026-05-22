@@ -6,6 +6,11 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
+interface HistoryMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -25,12 +30,18 @@ export async function POST(req: NextRequest) {
     if (conversationId) {
       conversation = await prisma.conversation.findUnique({
         where: { id: conversationId },
-        include: { messages: { orderBy: { createdAt: "asc" }, take: 20 } },
+        include: {
+          messages: {
+            orderBy: { createdAt: "asc" },
+            take: 20,
+          },
+        },
       });
     }
 
     if (!conversation) {
-      const title = message.length > 40 ? message.slice(0, 40) + "…" : message;
+      const title =
+        message.length > 40 ? message.slice(0, 40) + "…" : message;
       conversation = await prisma.conversation.create({
         data: { title },
         include: { messages: true },
@@ -45,10 +56,12 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const history = (conversation.messages || []).map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    }));
+    const history: HistoryMessage[] = (conversation.messages || []).map(
+      (msg) => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content,
+      })
+    );
 
     history.push({ role: "user", content: message });
 
@@ -79,7 +92,8 @@ export async function POST(req: NextRequest) {
     });
 
     if (!conversationId) {
-      const title = message.length > 50 ? message.slice(0, 50) + "…" : message;
+      const title =
+        message.length > 50 ? message.slice(0, 50) + "…" : message;
       await prisma.conversation.update({
         where: { id: conversation.id },
         data: { title },
@@ -94,7 +108,10 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Chat API error:", error);
     return NextResponse.json(
-      { error: "Failed to process message" },
+      {
+        error: "Failed to process message",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
