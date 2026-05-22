@@ -1,27 +1,41 @@
+<div align="center">
+
 # 🌙 Moon AI Chatbot
 
-> **★ Best Project** — Full Stack Conversational AI Web App
+### Full Stack Conversational AI Web App
 
-A stunning, space-themed full-stack AI chatbot featuring glassmorphism UI, real-time AI responses, persistent chat history, and cosmic animations. Built end-to-end with Next.js 15, TypeScript, Prisma ORM, and a custom REST API.
+[![★ Best Project](https://img.shields.io/badge/★-Best%20Project-FFD700?style=for-the-badge&labelColor=1a1a2e)](https://moonaichatbot.vercel.app)
+[![Live Demo](https://img.shields.io/badge/🌐-Live%20Demo-6B4EFF?style=for-the-badge&labelColor=1a1a2e)](https://moonaichatbot.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com)
 
-![Moon AI Preview](https://placehold.co/1200x600/02010a/a394ff?text=Moon+AI+Chatbot&font=playfair-display)
+**A space-themed full-stack AI chatbot with glassmorphism UI, real-time AI responses, and persistent chat history.**
+
+[🚀 Live Demo](https://moonaichatbot.vercel.app) · [🐛 Report Bug](https://github.com/GulsumBegam/moon-ai-chatbot/issues) · [💡 Request Feature](https://github.com/GulsumBegam/moon-ai-chatbot/issues)
+
+</div>
+
+---
+
+## 📸 Preview
+
+> Space-themed glassmorphism UI with animated nebulae, star field, floating moon orb, and real-time AI responses.
 
 ---
 
 ## ✨ Features
 
-- 🤖 **Real-time AI responses** via OpenAI GPT-4o-mini
-- 💾 **Persistent chat history** powered by Prisma ORM + SQLite
-- 🌌 **Space-themed glassmorphism UI** with animated nebulae, stars, and a floating moon
-- 💬 **Multiple conversations** with sidebar management
-- 🗑️ **Delete conversations** with smooth animations
-- 📝 **Markdown rendering** with syntax highlighting
-- 📋 **Copy messages** to clipboard
-- ⌨️ **Typing indicators** with cosmic animation
-- 🎨 **Framer Motion** animations throughout
-- 📱 **Responsive layout** with collapsible sidebar
-- 🌠 **Shooting stars** and twinkling star field
-- 🚀 **Suggestion prompts** to get started quickly
+- 🤖 **Real-time AI responses** powered by Groq AI (Llama 3.3 70B) — completely free!
+- 💾 **Persistent chat history** — all conversations saved to PostgreSQL database
+- 🌌 **Space glassmorphism UI** — animated nebulae, star field, shooting stars & moon orb
+- 💬 **Multiple conversations** — create, switch, rename, and delete conversations
+- 📝 **Markdown rendering** — AI responses with code blocks, lists, and formatting
+- ⚡ **Framer Motion animations** — smooth transitions, typing indicators, hover effects
+- 📋 **Copy messages** — one-click copy to clipboard
+- 🎯 **Suggestion prompts** — quick-start prompts for new users
+- 📱 **Responsive design** — works on desktop and mobile
+- 🌠 **Canvas animations** — shooting stars and twinkling star field
 
 ---
 
@@ -31,15 +45,16 @@ A stunning, space-themed full-stack AI chatbot featuring glassmorphism UI, real-
 |-------|-----------|
 | **Framework** | Next.js 15 (App Router) |
 | **Language** | TypeScript |
-| **AI Integration** | OpenAI API (GPT-4o-mini) |
+| **AI Provider** | Groq AI — Llama 3.3 70B Versatile |
 | **Database ORM** | Prisma ORM |
-| **Database** | SQLite (dev) / PostgreSQL (prod) |
+| **Database** | Neon Serverless PostgreSQL |
 | **Styling** | Tailwind CSS |
-| **Components** | shadcn/ui + Radix UI |
 | **Animations** | Framer Motion |
+| **Components** | shadcn/ui + Radix UI |
 | **Icons** | Lucide React |
 | **Markdown** | React Markdown |
-| **API** | Next.js REST API Routes |
+| **Deployment** | Vercel |
+| **Version Control** | GitHub |
 
 ---
 
@@ -49,81 +64,40 @@ A stunning, space-themed full-stack AI chatbot featuring glassmorphism UI, real-
 moon-ai-chatbot/
 ├── app/
 │   ├── api/
-│   │   ├── chat/
-│   │   │   └── route.ts          # POST /api/chat - Send message, get AI response
+│   │   ├── chat/route.ts           # POST — AI chat endpoint
 │   │   └── history/
-│   │       ├── route.ts          # GET /api/history - Fetch all conversations
-│   │       └── [id]/
-│   │           └── route.ts      # GET/DELETE/PATCH /api/history/:id
-│   ├── layout.tsx                # Root layout with fonts + metadata
-│   └── page.tsx                  # Main page (landing + chat)
+│   │       ├── route.ts            # GET — all conversations
+│   │       └── [id]/route.ts       # GET/DELETE/PATCH — single conversation
+│   ├── layout.tsx                  # Root layout + fonts + metadata
+│   └── page.tsx                    # Main page
 ├── components/
-│   ├── CosmicBackground.tsx      # Animated star field, nebulae, moon orb
-│   ├── LandingHero.tsx           # Welcome screen with CTA
-│   ├── Sidebar.tsx               # Conversation history sidebar
-│   └── ChatInterface.tsx         # Chat UI with messages + input
+│   ├── CosmicBackground.tsx        # Canvas stars, nebulae, moon orb
+│   ├── LandingHero.tsx             # Welcome screen with CTA
+│   ├── Sidebar.tsx                 # Conversation history panel
+│   └── ChatInterface.tsx           # Chat UI + input
 ├── lib/
-│   ├── prisma.ts                 # Prisma client singleton
-│   └── utils.ts                  # Utility functions (cn, formatDate, etc.)
+│   ├── prisma.ts                   # Prisma client singleton
+│   └── utils.ts                    # Helper functions
 ├── prisma/
-│   └── schema.prisma             # Database schema (Conversation + Message)
-├── styles/
-│   └── globals.css               # Global styles, glassmorphism, prose styles
+│   └── schema.prisma               # Database schema
 ├── types/
-│   └── index.ts                  # TypeScript types + interfaces
-├── .env.example                  # Environment variables template
-├── tailwind.config.ts            # Custom Tailwind theme (cosmic colors)
-└── next.config.mjs               # Next.js configuration
+│   └── index.ts                    # TypeScript interfaces
+├── styles/
+│   └── globals.css                 # Global styles + glassmorphism
+└── tailwind.config.ts              # Custom cosmic design tokens
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🌐 API Routes
 
-### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
-- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
-
-### Installation
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/moon-ai-chatbot.git
-cd moon-ai-chatbot
-
-# 2. Install dependencies
-npm install
-
-# 3. Set up environment variables
-cp .env.example .env.local
-# Edit .env.local and add your OPENAI_API_KEY
-
-# 4. Set up the database
-npx prisma generate
-npx prisma db push
-
-# 5. Start the development server
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## ⚙️ Environment Variables
-
-```env
-# Database connection (SQLite for dev, PostgreSQL for prod)
-DATABASE_URL="file:./dev.db"
-
-# OpenAI API key (required for AI responses)
-OPENAI_API_KEY="sk-..."
-
-# App URL
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/chat` | Send message → get AI response → save to DB |
+| `GET` | `/api/history` | Fetch all conversations |
+| `GET` | `/api/history/:id` | Get conversation + messages |
+| `DELETE` | `/api/history/:id` | Delete conversation |
+| `PATCH` | `/api/history/:id` | Update conversation title |
 
 ---
 
@@ -150,46 +124,77 @@ model Message {
 
 ---
 
-## 🌐 API Routes
+## 🚀 Getting Started
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/chat` | Send a message, get AI response |
-| `GET` | `/api/history` | Get all conversations |
-| `GET` | `/api/history/:id` | Get conversation with messages |
-| `DELETE` | `/api/history/:id` | Delete a conversation |
-| `PATCH` | `/api/history/:id` | Update conversation title |
+### Prerequisites
+- Node.js 18+
+- Groq API key (free at [console.groq.com](https://console.groq.com))
+- Neon PostgreSQL database (free at [neon.tech](https://neon.tech))
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/GulsumBegam/moon-ai-chatbot.git
+cd moon-ai-chatbot
+
+# 2. Install dependencies
+npm install
+
+# 3. Set up environment variables
+cp .env.example .env.local
+# Add your GROQ_API_KEY and DATABASE_URL
+
+# 4. Set up database
+npx prisma generate
+npx prisma db push
+
+# 5. Run development server
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) 🚀
+
+---
+
+## ⚙️ Environment Variables
+
+```env
+# Neon PostgreSQL connection string
+DATABASE_URL="postgresql://user:password@host/neondb?sslmode=require"
+
+# Groq AI API key (free at console.groq.com)
+GROQ_API_KEY="gsk_xxxxxxxxxxxxxxxx"
+```
 
 ---
 
 ## 🎨 Design System
 
-The UI uses a custom **cosmic design system** with:
+Custom cosmic design system built with Tailwind CSS:
 
-- **Colors**: Deep void blacks, lunar purples, nebula pinks/cyans/golds
-- **Typography**: Cormorant Garamond (display) + DM Sans (body) + JetBrains Mono (code)
-- **Effects**: Glassmorphism, animated nebulae, star field, shooting stars
-- **Animations**: Framer Motion throughout — page transitions, message entrance, typing indicator
+- **Colors** — Deep void blacks `#02010a`, lunar purples `#6b4eff`, nebula pink/cyan/gold
+- **Typography** — Cormorant Garamond (display) + DM Sans (body) + JetBrains Mono (code)
+- **Effects** — Glassmorphism with `backdrop-filter: blur()`, animated canvas nebulae
+- **Animations** — Float, twinkle, orbit, shimmer, pulse-glow via Framer Motion
 
 ---
 
-## 📦 Languages on GitHub
+## 📦 GitHub Languages
 
-This project uses the following languages that GitHub detects:
-
-| Language | Usage |
-|----------|-------|
-| **TypeScript** | Main application code (`.ts`, `.tsx`) |
-| **CSS** | Global styles, Tailwind (`globals.css`) |
-| **Prisma** | Database schema (`schema.prisma`) |
-| **JavaScript** | Config files (`postcss.config.js`) |
-| **JSON** | `package.json`, `tsconfig.json` |
+| Language | Files | Usage |
+|----------|-------|-------|
+| TypeScript | `.ts`, `.tsx` | ~65% — Main application code |
+| CSS | `.css` | ~18% — Global styles |
+| Prisma | `.prisma` | ~8% — Database schema |
+| JavaScript | `.js` | ~6% — Config files |
+| JSON | `.json` | ~3% — Package config |
 
 ---
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+Deployed on **Vercel** with **Neon PostgreSQL**:
 
 ```bash
 # Install Vercel CLI
@@ -198,37 +203,37 @@ npm i -g vercel
 # Deploy
 vercel
 
-# Set environment variables in Vercel dashboard:
-# - DATABASE_URL (use PostgreSQL for production)
-# - OPENAI_API_KEY
-```
-
-### Production Database
-
-For production, switch to PostgreSQL in `prisma/schema.prisma`:
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+# Add environment variables in Vercel dashboard
+# DATABASE_URL + GROQ_API_KEY
 ```
 
 ---
 
-## 🤝 Contributing
+## 🏆 Project Highlights
 
-Pull requests are welcome! For major changes, please open an issue first.
+- ✅ Built **end-to-end** — frontend, backend, AI, and database
+- ✅ **Production deployed** at moonaichatbot.vercel.app
+- ✅ **Free stack** — Groq AI + Neon + Vercel all on free tier
+- ✅ **Real-time AI** with conversation context memory
+- ✅ **Persistent storage** — chat history never lost
+- ✅ **Type-safe** throughout with TypeScript
 
 ---
 
-## 📄 License
+## 🤝 Connect
 
-MIT License — see [LICENSE](LICENSE) for details.
+**Gulsum Begam** — Full Stack Developer
+
+[![GitHub](https://img.shields.io/badge/GitHub-GulsumBegam-181717?style=flat&logo=github)](https://github.com/GulsumBegam)
 
 ---
 
 <div align="center">
-  <p>Built with 🌙 and cosmic energy</p>
-  <p><strong>Moon AI</strong> — Where intelligence meets the stars</p>
+
+**🌙 Moon AI — Where Intelligence Meets the Stars**
+
+*Built with Next.js 15 · TypeScript · Prisma · Groq AI · Vercel*
+
+⭐ Star this repo if you found it helpful!
+
 </div>
