@@ -3,6 +3,7 @@
 # 🌙 Moon AI Chatbot
 
 ### Full Stack Conversational AI Web App
+[![🌙 Live Preview](https://img.shields.io/badge/🌙-Project%20Preview-6B4EFF?style=for-the-badge)](https://moonaichatbot.vercel.app/moon-ai-preview.html)
 
 [![★ Best Project](https://img.shields.io/badge/★-Best%20Project-FFD700?style=for-the-badge&labelColor=1a1a2e)](https://moonaichatbot.vercel.app)
 [![Live Demo](https://img.shields.io/badge/🌐-Live%20Demo-6B4EFF?style=for-the-badge&labelColor=1a1a2e)](https://moonaichatbot.vercel.app)
