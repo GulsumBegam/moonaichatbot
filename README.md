@@ -19,7 +19,7 @@
 
 <br/>
 
-> *"A production-deployed, full-stack AI chatbot with persistent memory, cosmic UI, and real-time streaming — built entirely in TypeScript by [Gulsum Begam](https://gulsumportfolio.github.io)."*
+> *"A production-deployed, full-stack AI chatbot with persistent memory, cosmic UI, and real-time streaming — built entirely in TypeScript by [Gulsum Begam](https://gulsumbegam.github.io/portfolioGuls/)."*
 
 </div>
 
@@ -213,7 +213,7 @@ moonaichatbot/
 Full Stack Developer · UI/UX Developer · AI & ML Enthusiast  
 Sattur, Virudhunagar, Tamil Nadu, India
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-gulsumportfolio.github.io-6d28d9?style=flat-square)](https://gulsumportfolio.github.io)
+[![Portfolio](https://img.shields.io/badge/Portfolio-gulsumportfolio.github.io-6d28d9?style=flat-square)](https://gulsumbegam.github.io/portfolioGuls/)
 [![GitHub](https://img.shields.io/badge/GitHub-GulsumBegam-181717?style=flat-square&logo=github)](https://github.com/GulsumBegam)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-gulsumbegam-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/gulsumbegam)
 [![Email](https://img.shields.io/badge/Email-gulsumbegamofficial@gmail.com-EA4335?style=flat-square&logo=gmail)](mailto:gulsumbegamofficial@gmail.com)
