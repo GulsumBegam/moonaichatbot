@@ -70,7 +70,7 @@
 
 ---
 
-### 🌟 Creator Introduction
+### 🌟 Side panel
 <img src="screenshot_creator.png" alt="Creator" width="100%"/>
 
 ---
