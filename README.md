@@ -228,6 +228,6 @@ Sattur, Virudhunagar, Tamil Nadu, India
 
 ⭐ **If this project inspired you, drop a star!** ⭐
 
-*Moon AI v1.0 · Best Project ★*
+*Moon AI v1.0 ★*
 
 </div>
