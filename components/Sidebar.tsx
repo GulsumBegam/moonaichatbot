@@ -240,7 +240,7 @@ export function Sidebar({
                 className="text-xs font-mono"
                 style={{ color: "rgba(255,255,255,0.2)" }}
               >
-                Moon AI v1.0 · Best Project ★
+                Moon AI v1.0 ★
               </span>
             </div>
           </div>
